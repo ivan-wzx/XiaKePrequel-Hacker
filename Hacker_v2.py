@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+import wcwidth
 
 
 SAVE_FILE_ROOT = "C:\\Program Files (x86)\\Steam\\userdata\\121108967\\650760\\remote"
@@ -235,6 +236,7 @@ def main():
         if user_input == "3":
             print("当前拥有以下物品：")
             items = data["m_BackpackList"]
+            item_list = []
             for item in items:
                 item_id = str(item["m_ItemID"])
                 name = None
@@ -244,8 +246,10 @@ def main():
                 name = EQUIP_MAPPING[item_id] if item_id in EQUIP_MAPPING else name
                 name = WEAPON_MAPPING[item_id] if item_id in WEAPON_MAPPING else name
                 if name is not None:
-                    item_id = item_id + " " + name
-                print("{}: {}".format(item_id, str(item["m_iAmount"])))
+                    item_id = item_id + "" + name
+                info = "{}:{}".format(item_id, str(item["m_iAmount"]))
+                item_list.append(info)
+            print(format_list_string(item_list, 30, 3))
             user_selection = input("是否查看物品编号(Y/N):")
             if user_selection.lower() in {"yes", "y"}:
                 while(True):
@@ -255,15 +259,15 @@ def main():
                     if int(user_selection) == 0:
                         break
                     if int(user_selection) == 1:
-                        print("\n".join("{}:{}".format(key, value) for key, value in WEAPON_MAPPING.items()))
+                        print(format_list_string(["{}:{}".format(key, value) for key, value in WEAPON_MAPPING.items()], 30, 3))
                     if int(user_selection) == 2:
-                        print("\n".join("{}:{}".format(key, value) for key, value in EQUIP_MAPPING.items()))
+                        print(format_list_string(["{}:{}".format(key, value) for key, value in EQUIP_MAPPING.items()], 30, 3))
                     if int(user_selection) == 3:
-                        print("\n".join("{}:{}".format(key, value) for key, value in WUGONG_MAPPING.items()))
+                        print(format_list_string(["{}:{}".format(key, value) for key, value in WUGONG_MAPPING.items()], 30, 3))
                     if int(user_selection) == 4:
-                        print("\n".join("{}:{}".format(key, value) for key, value in NEIGONG_MAPPING.items()))
+                        print(format_list_string(["{}:{}".format(key, value) for key, value in NEIGONG_MAPPING.items()], 30, 3))
                     if int(user_selection) == 5:
-                        print("\n".join("{}:{}".format(key, value) for key, value in ITEM_MAPPING.items()))
+                        print(format_list_string(["{}:{}".format(key, value) for key, value in ITEM_MAPPING.items()], 30, 3))
             id=input("我想修改/增加物品编号：")
             value=int(input("修改/增加数量为："))
             modified = False
@@ -292,8 +296,6 @@ def main():
             print(msg)
             user_selection = input("我想修改：")
             npc_id = data["m_TeammateList"][int(user_selection)]
-            #print("所有属性列表：")
-            #print(", ".join(list(data["m_NpcList"][0].keys())))
             i = 0
             for npc in data["m_NpcList"]:
                 if npc["iNpcID"] == npc_id:
@@ -328,7 +330,6 @@ def main():
                         modified = True
                         print("操作完成")
                 i = i + 1
-            #print(json.dumps(data["m_NpcList"][npc_idx], indent=2))
     
     if modified:
         user_input = input("是否保存修改结果(Y/N)：")
@@ -336,6 +337,25 @@ def main():
             with open(SAVE_FILE_PATH, 'w') as outfile:
                 json.dump(data, outfile)
             print("存档已修改！")
+
+
+def manual_wcwidth(s, width):
+    size = 0
+    for c in s:
+        size = size + wcwidth.wcswidth(c)
+    return s + " " * (width - size)
+
+
+def format_list_string(strings, width, tab_num):
+    msg = ""
+    counter = 0
+    for s in strings:
+        msg = msg + manual_wcwidth(s, width)
+        counter = counter + 1
+        if counter == tab_num:
+            msg = msg + "\n"
+            counter = 0
+    return msg
 
 
 if __name__ == "__main__":
