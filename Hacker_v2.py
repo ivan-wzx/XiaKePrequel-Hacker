@@ -246,8 +246,8 @@ def main():
                 name = EQUIP_MAPPING[item_id] if item_id in EQUIP_MAPPING else name
                 name = WEAPON_MAPPING[item_id] if item_id in WEAPON_MAPPING else name
                 if name is not None:
-                    item_id = item_id + "" + name
-                info = "{}:{}".format(item_id, str(item["m_iAmount"]))
+                    item_id = item_id + "" + name + ":"
+                info = "{}{}".format(manual_wcwidth(item_id, 25), str(item["m_iAmount"]))
                 item_list.append(info)
             print(format_list_string(item_list, 30, 3))
             user_selection = input("是否查看物品编号(Y/N):")
