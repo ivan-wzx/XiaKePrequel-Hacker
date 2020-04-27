@@ -15,7 +15,8 @@ ITEM_MAPPING = {"100933":"熊胆","110001":"逍遥散","110002":"再造膏","110
 "110049":"五宝花蜜酒","110050":"咸鱼","110051":"小白豆浆","110052":"夫妻肺片","110053":"三丝敲鱼","110054":"洛阳燕菜","110055":"担担面",
 "110056":"桂圆红枣鸡汤","110057":"包叶智慧果","130015":"智慧果","130034":"回锅肉","130068":"大红袍","130069":"半山妖",
 "130070":"即墨老酒","130071":"汾酒","130072":"西凤酒","130087":"五粮液","130088":"宝丰酒","130089":"杜康酒","130091":"法华经","130092":"般若心经",
-"130093":"金刚经","130094":"维摩诘经","130107":"新鲜豆腐","130114":"白菜","130115":"爆米花"}
+"130093":"金刚经","130094":"维摩诘经","130107":"新鲜豆腐","130114":"白菜","130115":"爆米花", "130037":"觥筹交错组", "130052": "珍贵草药",
+"130051":"稀有矿石", "130053":"蟾蜍", "130057":"蜈蚣", "130054":"蝎子", "130055":"毒蛇"}
 
 WEAPON_MAPPING = {'100002':'太乙刀剑','100003':'无极刀剑','100004':'阴阳倒乱刃','100005':'紫金双刃','100101':'粗布拳套','100102':'皮手套','100103':'鹿革手套','100104':'离魂金线缠',
 '100105':'玄铁手套','100106':'金丝手套','100107':'萃毒指','100108':'精钢拳套','100109':'天蚕丝手套','100110':'铁手套','100201':'单刀','100202':'银口九齿刀',
@@ -209,6 +210,7 @@ def main():
     
     while(True):
         print("0-退出 1-修改金钱 2-修改阅历点数 3-修改物品 4-修改人物属性")
+        print("(所有改动会在退出时确认保存)")
         print("小Tip：想要人物学习某种武功/内功，可以修改物品加入相应武功秘籍")
         print("小Tip: 想要升级某种武功/内功，可以修改物品增加智慧果的数量")
         user_input=input("我想：")
@@ -231,52 +233,66 @@ def main():
             print("操作完成")
         
         if user_input == "3":
-            print("当前拥有以下物品：")
-            items = data["m_BackpackList"]
-            item_list = []
-            for item in items:
-                item_id = str(item["m_ItemID"])
-                name = None
-                name = ITEM_MAPPING[item_id] if item_id in ITEM_MAPPING else name
-                name = WUGONG_MAPPING[item_id] if item_id in WUGONG_MAPPING else name
-                name = NEIGONG_MAPPING[item_id] if item_id in NEIGONG_MAPPING else name
-                name = EQUIP_MAPPING[item_id] if item_id in EQUIP_MAPPING else name
-                name = WEAPON_MAPPING[item_id] if item_id in WEAPON_MAPPING else name
-                if name is not None:
-                    item_id = item_id + "" + name + ":"
-                info = "{}{}".format(manual_wcwidth(item_id, 25), str(item["m_iAmount"]))
-                item_list.append(info)
-            print(format_list_string(item_list, 30, 3))
-            user_selection = input("是否查看物品编号(Y/N):")
-            if user_selection.lower() in {"yes", "y"}:
-                while(True):
-                    user_selection = input("我想查看 （0：返回，1：武器，2：装备，3：武学，4：内功，5：其他物品）：")
-                    if user_selection == "":
-                        continue
-                    if int(user_selection) == 0:
-                        break
-                    if int(user_selection) == 1:
-                        print(format_list_string(["{}:{}".format(key, value) for key, value in WEAPON_MAPPING.items()], 30, 3))
-                    if int(user_selection) == 2:
-                        print(format_list_string(["{}:{}".format(key, value) for key, value in EQUIP_MAPPING.items()], 30, 3))
-                    if int(user_selection) == 3:
-                        print(format_list_string(["{}:{}".format(key, value) for key, value in WUGONG_MAPPING.items()], 30, 3))
-                    if int(user_selection) == 4:
-                        print(format_list_string(["{}:{}".format(key, value) for key, value in NEIGONG_MAPPING.items()], 30, 3))
-                    if int(user_selection) == 5:
-                        print(format_list_string(["{}:{}".format(key, value) for key, value in ITEM_MAPPING.items()], 30, 3))
-            id=input("我想修改/增加物品编号：")
-            value=int(input("修改/增加数量为："))
-            modified = False
-            for item in items:
-                item_id = str(item["m_ItemID"])
-                if item_id == id:
-                    item["m_iAmount"] = value
+            while(True):
+                print("当前拥有以下物品：")
+                items = data["m_BackpackList"]
+                item_list = []
+                for item in items:
+                    item_id = str(item["m_ItemID"])
+                    name = None
+                    name = ITEM_MAPPING[item_id] if item_id in ITEM_MAPPING else name
+                    name = WUGONG_MAPPING[item_id] if item_id in WUGONG_MAPPING else name
+                    name = NEIGONG_MAPPING[item_id] if item_id in NEIGONG_MAPPING else name
+                    name = EQUIP_MAPPING[item_id] if item_id in EQUIP_MAPPING else name
+                    name = WEAPON_MAPPING[item_id] if item_id in WEAPON_MAPPING else name
+                    if name is not None:
+                        item_id = item_id + "" + name + ":"
+                    info = "{}{}".format(manual_wcwidth(item_id, 25), str(item["m_iAmount"]))
+                    item_list.append(info)
+                print(format_list_string(item_list, 30, 3))
+                user_selection = input("选择操作（0-返回，1-查看物品编号，2-一键添加药品，3-一键添加原材料, 4-一键添加所有武学，5-手动添加）:")
+                if user_selection == "0":
+                    break
+                ids = []
+                value = 99
+                if user_selection == "1":
+                    while(True):
+                        user_selection = input("我想查看(0：返回，1：武器，2：装备，3：武学，4：内功，5：其他物品)：")
+                        if user_selection == "":
+                            continue
+                        if int(user_selection) == 0:
+                            break
+                        if int(user_selection) == 1:
+                            print(format_list_string(["{}:{}".format(key, value) for key, value in WEAPON_MAPPING.items()], 30, 3))
+                        if int(user_selection) == 2:
+                            print(format_list_string(["{}:{}".format(key, value) for key, value in EQUIP_MAPPING.items()], 30, 3))
+                        if int(user_selection) == 3:
+                            print(format_list_string(["{}:{}".format(key, value) for key, value in WUGONG_MAPPING.items()], 30, 3))
+                        if int(user_selection) == 4:
+                            print(format_list_string(["{}:{}".format(key, value) for key, value in NEIGONG_MAPPING.items()], 30, 3))
+                        if int(user_selection) == 5:
+                            print(format_list_string(["{}:{}".format(key, value) for key, value in ITEM_MAPPING.items()], 30, 3))
+                elif user_selection == "2":
+                    ids = ["110013","110005","110006","110008","110009","110057", "130015"]
+                elif user_selection == "3":
+                    ids = ["130051", "130052","130037","110057", "130015"]
+                elif user_selection == "4":
+                    ids = list(WUGONG_MAPPING.keys())
+                    ids.extend(list(NEIGONG_MAPPING.keys()))
+                    value = 10
+                elif user_selection == "5":
+                    ids=[input("我想修改/增加物品编号：")]
+                    value=int(input("修改/增加数量为："))
+                for item in items:
+                    item_id = str(item["m_ItemID"])
+                    if item_id in ids:
+                        item["m_iAmount"] = value
+                        modified = True
+                        ids.remove(item_id)
+                for id in ids:
+                    items.append({"m_bNew":False,"m_iAmount":value,"m_ItemID":int(id)})
                     modified = True
-            if not modified:
-                items.append({"m_bNew":False,"m_iAmount":value,"m_ItemID":int(id)})
-            modified = True
-            print("操作完成")
+                print("操作完成")
         
         if user_input == "4":
             print("当前在队人员为：")
@@ -292,6 +308,8 @@ def main():
                 msg = msg + ", "
             print(msg)
             user_selection = input("我想修改：")
+            if user_selection == "":
+                continue
             npc_id = data["m_TeammateList"][int(user_selection)]
             for npc in data["m_NpcList"]:
                 if npc["iNpcID"] == npc_id:
@@ -303,25 +321,34 @@ def main():
                             if len(att) == 5:
                                 att_val = npc[att[2]][att[3]]
                             print(str(att[0]) + att[1] + ":" + str(att_val))
-                        user_selection=input("我想修改属性(0:返回):")
-                        if user_selection == "" or int(user_selection) == 0:
+                        user_selection=input("我想修改属性编号(0:返回，99:属性全满):")
+                        if user_selection == "":
+                            continue
+                        if int(user_selection) == 0:
                             break
                         user_selection = int(user_selection) - 1
-                        att = NPC_ATTR_LIST[user_selection]
-                        if user_selection == 30:
-                            print("现有天赋：")
-                            print("\n".join("{}:{}".format(str(talent), TALENT_LIST[str(talent)]) for talent in npc["TalentList"]))
-                            user_selection2 = input("是否查看天赋代码（Y/N）：")
-                            if user_selection2.lower() in {"y","yes"}:
-                                print("\n".join("{}:{}".format(k,v) for k,v in TALENT_LIST.items()))
-                            value = input("我想改为(多个天赋用逗号隔开)：")
-                            value  = [int(v.strip()) for v in value.split(",") if v.strip() != ""]
+                        if user_selection == 98:
+                            for att in NPC_ATTR_LIST[:-1]:
+                                if len(att) <= 4:
+                                    npc[att[2]] = att[-1]
+                                if len(att) == 5:
+                                    npc[att[2]][att[3]] = att[-1]
                         else:
-                            value=int(input("修改{}（建议最大值{}），我想改为：".format(att[1], att[-1])))
-                        if len(att) <= 4:
-                            npc[att[2]] = value 
-                        if len(att) == 5:
-                            npc[att[2]][att[3]] = value
+                            att = NPC_ATTR_LIST[user_selection]
+                            if user_selection == 30:
+                                print("现有天赋：")
+                                print("\n".join("{}:{}".format(str(talent), TALENT_LIST[str(talent)]) for talent in npc["TalentList"]))
+                                user_selection2 = input("是否查看天赋代码（Y/N）：")
+                                if user_selection2.lower() in {"y","yes"}:
+                                    print(format_list_string(["{}:{}".format(k,v) for k,v in TALENT_LIST.items()], 80, 2))
+                                value = input("我想改为(多个天赋用逗号隔开)：")
+                                value  = [int(v.strip()) for v in value.split(",") if v.strip() != ""]
+                            else:
+                                value=int(input("修改{}（建议最大值{}），我想改为：".format(att[1], att[-1])))
+                            if len(att) <= 4:
+                                npc[att[2]] = value
+                            if len(att) == 5:
+                                npc[att[2]][att[3]] = value
                         modified = True
                         print("操作完成")
     
@@ -342,13 +369,10 @@ def manual_wcwidth(s, width):
 
 def format_list_string(strings, width, tab_num):
     msg = ""
-    counter = 0
-    for s in strings:
+    for i, s in enumerate(strings):
         msg = msg + manual_wcwidth(s, width)
-        counter = counter + 1
-        if counter == tab_num:
+        if (i+1) % tab_num == 0 and i != len(strings) - 1:
             msg = msg + "\n"
-            counter = 0
     return msg
 
 
@@ -356,5 +380,5 @@ if __name__ == "__main__":
     try:
         main()
     except:
-        print("程序已崩溃 T~~T")
+        print("程序已退出")
     input("程序结束，按任意键退出")
