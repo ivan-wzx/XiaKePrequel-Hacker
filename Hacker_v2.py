@@ -179,7 +179,9 @@ NPC_ATTR_LIST = [
 
 
 def main():
-    print("欢迎使用侠客风云传前传存档修改器！本修改器由网上热心网友于2020年4月手工制作。如有疑问，请联系作者ivan.wzx@gmail.com。")
+    print("****************************************************************************************************************")
+    print("欢迎使用侠客风云传前传存档修改器！本修改器由热心网友于2020年4月手工制作。如有疑问，请联系作者ivan.wzx@gmail.com。")
+    print("****************************************************************************************************************")
     input("请确保游戏已关闭，回车继续")
     root = input("游戏存档目录（steam用户目录在Steam\\userdata\\xxxxxxxxx\\xxxxxx\\remote，普通用户目录在Tale of Wuxia: Prequel\\Config\\SaveData）：")
     if not os.path.exists(root):
@@ -209,6 +211,7 @@ def main():
         data = json.load(f)
     
     while(True):
+        print("----------------------------------------------------------")
         print("0-退出 1-修改金钱 2-修改阅历点数 3-修改物品 4-修改人物属性")
         print("(所有改动会在退出时确认保存)")
         print("小Tip：想要人物学习某种武功/内功，可以修改物品加入相应武功秘籍")
@@ -320,7 +323,7 @@ def main():
                                 att_val = npc[att[2]] 
                             if len(att) == 5:
                                 att_val = npc[att[2]][att[3]]
-                            print(str(att[0]) + att[1] + ":" + str(att_val))
+                            print(manual_wcwidth(str(att[0]) + " " + att[1] + ":", 15) + str(att_val))
                         user_selection=input("我想修改属性编号(0:返回，99:属性全满):")
                         if user_selection == "":
                             continue
@@ -381,4 +384,4 @@ if __name__ == "__main__":
         main()
     except:
         print("程序已退出")
-    input("程序结束，按任意键退出")
+    input("程序结束，按回车键退出")
