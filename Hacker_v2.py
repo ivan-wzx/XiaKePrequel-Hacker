@@ -293,10 +293,8 @@ def main():
             print(msg)
             user_selection = input("我想修改：")
             npc_id = data["m_TeammateList"][int(user_selection)]
-            i = 0
             for npc in data["m_NpcList"]:
                 if npc["iNpcID"] == npc_id:
-                    npc_idx = i
                     while(True):
                         print("当前属性值：")
                         for att in NPC_ATTR_LIST:
@@ -326,12 +324,11 @@ def main():
                             npc[att[2]][att[3]] = value
                         modified = True
                         print("操作完成")
-                i = i + 1
     
     if modified:
         user_input = input("是否保存修改结果(Y/N)：")
         if user_input.lower() in {"yes", "y"}:
-            with open(SAVE_FILE_PATH, 'w') as outfile:
+            with open(savefile, 'w') as outfile:
                 json.dump(data, outfile)
             print("存档已修改！")
 
