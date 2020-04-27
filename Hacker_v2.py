@@ -5,9 +5,6 @@ import sys
 import wcwidth
 
 
-SAVE_FILE_ROOT = "C:\\Program Files (x86)\\Steam\\userdata\\121108967\\650760\\remote"
-SAVE_FILE_PATH = "C:\\Program Files (x86)\\Steam\\userdata\\121108967\\650760\\remote\\Save10.Save"
-
 ITEM_MAPPING = {"100933":"熊胆","110001":"逍遥散","110002":"再造膏","110003":"承气散","110004":"黑玉断续膏","110005":"天香断续胶",
 "110006":"九转还魂丹","110007":"双冲饮","110008":"三黄宝腊丹","110009":"青龙散","110010":"茯苓首乌丸","110011":"田七鲨胆散",
 "110012":"九花玉露丸","110013":"十全大补丹","110014":"牛黄血竭丹","110015":"通犀地龙丸","110016":"胭脂泪","110017":"千锤百炼丹",
@@ -146,36 +143,36 @@ TALENT_LIST = {
 "353":"损人利己 每有一名队友伤重离场时，获得气盾，下次攻击必定暴击"}
 
 NPC_ATTR_LIST = [
-    [1,"臂力","iStr"], 
-    [2,"臂力上限","iMaxStr"],
-    [3,"根骨", "iCon"],
-    [4,"根骨上限","iMaxCon"],
-    [5,"悟性","iInt"],
-    [6,"悟性上限","iMaxInt"],
-    [7,"身法","iDex"],
-    [8,"身法上限","iMaxDex"],
-    [9,"闪避","iDodge"],
-    [10,"反击","iCounter"],
-    [11,"暴击","iCri"],
-    [12,"防御暴击","iDefendCri"],
-    [13,"防御反击","iDefendCounter"],
-    [14,"移动格数","iMoveStep"],
-    [15,"破剑","_MartialDef","DefSword"],
-    [16,"破刀","_MartialDef","DefBlade"],
-    [17,"破箭","_MartialDef","DefArrow"],
-    [18,"破掌","_MartialDef","DefFist"],
-    [19,"破气","_MartialDef","DefGas"],
-    [20,"破索","_MartialDef","DefRope"],
-    [21,"破鞭","_MartialDef","DefWhip"],
-    [22,"破枪","_MartialDef","DefPike"],
-    [23,"剑法","_MartialArts","UseSword"],
-    [24,"刀法","_MartialArts","UseBlade"],
-    [25,"箭器","_MartialArts","UseArrow"],
-    [26,"拳掌","_MartialArts","UseFist"],
-    [27,"气功","_MartialArts","UseGas"],
-    [28,"软索","_MartialArts","UseRope"],
-    [29,"钢鞭","_MartialArts","UseWhip"],
-    [30,"枪棍","_MartialArts","UsePike"],
+    [1,"臂力","iStr", 100],
+    [2,"臂力上限","iMaxStr", 100],
+    [3,"根骨", "iCon", 100],
+    [4,"根骨上限","iMaxCon", 100],
+    [5,"悟性","iInt", 100],
+    [6,"悟性上限","iMaxInt", 100],
+    [7,"身法","iDex", 100],
+    [8,"身法上限","iMaxDex", 100],
+    [9,"闪避","iDodge", 100],
+    [10,"反击","iCounter", 100],
+    [11,"暴击","iCri", 100],
+    [12,"防御暴击","iDefendCri", 100],
+    [13,"防御反击","iDefendCounter", 100],
+    [14,"移动格数","iMoveStep", 10],
+    [15,"破剑","_MartialDef","DefSword",100],
+    [16,"破刀","_MartialDef","DefBlade",100],
+    [17,"破箭","_MartialDef","DefArrow",100],
+    [18,"破掌","_MartialDef","DefFist",100],
+    [19,"破气","_MartialDef","DefGas",100],
+    [20,"破索","_MartialDef","DefRope",100],
+    [21,"破鞭","_MartialDef","DefWhip",100],
+    [22,"破枪","_MartialDef","DefPike",100],
+    [23,"剑法","_MartialArts","UseSword",100],
+    [24,"刀法","_MartialArts","UseBlade",100],
+    [25,"箭器","_MartialArts","UseArrow",100],
+    [26,"拳掌","_MartialArts","UseFist",100],
+    [27,"气功","_MartialArts","UseGas",100],
+    [28,"软索","_MartialArts","UseRope",100],
+    [29,"钢鞭","_MartialArts","UseWhip",100],
+    [30,"枪棍","_MartialArts","UsePike",100],
     [31,"天赋","TalentList"]
 ]
 
@@ -203,7 +200,7 @@ def main():
     user_input = input("找到{}个存档，需要修改存档(0:退出)：".format(len(savefiles)))
     if user_input == "0" or user_input == "":
         return
-    savefile = os.path.join(SAVE_FILE_ROOT, "Save{}.Save".format(int(user_input)-1))
+    savefile = os.path.join(root, "Save{}.Save".format(int(user_input)-1))
 
     data = None
     modified = False
@@ -303,15 +300,16 @@ def main():
                     while(True):
                         print("当前属性值：")
                         for att in NPC_ATTR_LIST:
-                            if len(att) == 3:
+                            if len(att) <= 4:
                                 att_val = npc[att[2]] 
-                            if len(att) == 4:
+                            if len(att) == 5:
                                 att_val = npc[att[2]][att[3]]
                             print(str(att[0]) + att[1] + ":" + str(att_val))
                         user_selection=input("我想修改属性(0:返回):")
                         if user_selection == "" or int(user_selection) == 0:
                             break
                         user_selection = int(user_selection) - 1
+                        att = NPC_ATTR_LIST[user_selection]
                         if user_selection == 30:
                             print("现有天赋：")
                             print("\n".join("{}:{}".format(str(talent), TALENT_LIST[str(talent)]) for talent in npc["TalentList"]))
@@ -321,11 +319,10 @@ def main():
                             value = input("我想改为(多个天赋用逗号隔开)：")
                             value  = [int(v.strip()) for v in value.split(",") if v.strip() != ""]
                         else:
-                            value=int(input("我想改为："))
-                        att = NPC_ATTR_LIST[user_selection]
-                        if len(att) == 3:
+                            value=int(input("修改{}（建议最大值{}），我想改为：".format(att[1], att[-1])))
+                        if len(att) <= 4:
                             npc[att[2]] = value 
-                        if len(att) == 4:
+                        if len(att) == 5:
                             npc[att[2]][att[3]] = value
                         modified = True
                         print("操作完成")
